@@ -59,8 +59,8 @@ static void shift_left_list(dynamic_list_t *list, size_t index);
 static void realloc_list(dynamic_list_t *list, size_t size,
                          enum allocation_type type);
 
-static void debug_list(dynamic_list_t *list);
-
 void print_contents_list(dynamic_list_t *list, void (*printf_fp)(void *));
+
+bool is_empty(dynamic_list_t *list);
 
 #endif

@@ -26,6 +26,7 @@ dynamic_list_t *initialize_list(size_t sizeof_item) {
   _list->sizeofItem = sizeof_item;
   _list->reallocGap = 10;
   _list->range = initialize_range(_list->pointer, _list->lenght);
+  fdebug("Creating dynamic_list_t! Size of item %u\n", sizeof_item);
   return _list;
 }
 
@@ -39,10 +40,15 @@ dynamic_list_t *initialize_list_allocated(size_t sizeof_item,
   _list->sizeofItem = sizeof_item;
   _list->reallocGap = 10;
   _list->range = initialize_range(_list->pointer, _list->lenght);
+  fdebug(
+      "Creating dynamic_list_t! Size of item %u, initial allocated space %u\n",
+      sizeof_item, initial_alloc);
   return _list;
 }
 
 range_t initialize_range(void *begin, size_t lenght) {
+  fdebug("Creating range_t! Begin 0x%x, End 0x%x, Lenght %u\n", begin,
+         begin + lenght, lenght);
   return (range_t){.begin = begin, .end = begin + lenght, .lenght = lenght};
 }
 
@@ -59,16 +65,22 @@ void *append_list(dynamic_list_t *list, void *item) {
 
   list->pointer[list->lenght] = item;
   list->lenght += 1;
-  debug_list(list);
   list->range = initialize_range(list->pointer, list->lenght);
+  fdebug("Append item to list! Current lenght %u, Allocated size %u, Pointer "
+         "0x%x, Item appended 0x%x\n",
+         list->lenght, list->allocatedSize, list->pointer, item);
   return item;
 }
 
 void free_list(dynamic_list_t *list, void (*free_fp)(void *)) {
   for (size_t index = 0; index < list->lenght; index++) {
+    fdebug("Free item from list! Item 0x%x, Index %u\n", list->pointer[index],
+           index);
     (free_fp) ? free_fp(list->pointer[index]) : free(list->pointer[index]);
   }
   free(list->pointer);
+  free(list);
+  fdebug("Free list pointer!\n");
 }
 
 void realloc_list(dynamic_list_t *list, size_t size,
@@ -77,29 +89,27 @@ void realloc_list(dynamic_list_t *list, size_t size,
   list->pointer = realloc(list->pointer, size * sizeof(void *));
 
   if (!list->pointer)
-    return (void)printf("Returned a null pointer from reallocation!");
+    return (void)printf(
+        "(ERROR) -> Returned a null pointer from reallocation!\n");
 
   list->allocatedSize = size;
 
-  (type == e_alloc) ? printf("Allocating %i\n", size)
-                    : printf("Deallocating %i\n", size);
-}
-
-void debug_list(dynamic_list_t *list) {
-  printf("Allocated size %i, Lenght %i, Realloc gap %i, Size in Kb %i\n",
-         list->allocatedSize, list->lenght, list->reallocGap,
-         list->lenght * list->sizeofItem / 1000);
+  (type == e_alloc) ? printf("(INFO) -> Allocating %i\n", size)
+                    : printf("(INFO) -> Deallocating %i\n", size);
 }
 
 void shift_left_list(dynamic_list_t *list, size_t index) {
   for (size_t i = index; i < list->lenght; i++)
     list->pointer[i] = list->pointer[i + 1];
+  fdebug("Shifted left list! Current lenght %u, Index value %u\n", list->lenght,
+         index);
 }
 
 void remove_list(dynamic_list_t *list, size_t index, void (*free_fp)(void *)) {
   if (index < 0 || index > list->lenght)
-    return (void)printf("Out of range to remove from list");
+    return (void)printf("(ERROR) -> Out of range to remove from list");
 
+  void *item = list->pointer[index];
   (free_fp) ? free_fp(list->pointer[index]) : free(list->pointer[index]);
 
   list->lenght -= 1;
@@ -108,14 +118,16 @@ void remove_list(dynamic_list_t *list, size_t index, void (*free_fp)(void *)) {
     realloc_list(list, list->allocatedSize - list->reallocGap, e_dealloc);
 
   shift_left_list(list, index);
-  debug_list(list);
   list->range = initialize_range(list->pointer, list->lenght);
+  fdebug("Remove item from list! Index removed %u, Current lenght %u, "
+         "Allocated size %u, Pointer 0x%x, Item removed 0x%x\n",
+         index, list->lenght, list->allocatedSize, list->pointer, item);
 }
 
 void print_contents_list(dynamic_list_t *list, void (*printf_fp)(void *)) {
   if (!printf_fp)
-    return (void)printf(
-        "Not print function pointer was passed to the print_contents_list");
+    return (void)printf("(ERROR) -> Not print function pointer was passed to "
+                        "the print_contents_list");
 
   for (size_t index = 0; index < list->lenght; index++) {
     printf_fp(list->pointer[index]);
@@ -125,3 +137,5 @@ void print_contents_list(dynamic_list_t *list, void (*printf_fp)(void *)) {
 bool is_range_inside_range(range_t is_range, range_t inside_of) {
   return (is_range.begin >= inside_of.begin && is_range.end <= inside_of.end);
 }
+
+bool is_empty(dynamic_list_t *list) { return (list->lenght == 0); }
