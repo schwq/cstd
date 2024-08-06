@@ -1,4 +1,5 @@
-#include "smart_ptr.h"
+#include "../include/smart_ptr.h"
+#include "../include/exception.h"
 
 type_data_t *make_type_data(void *data, size_t size) {
   type_data_t *type = (type_data_t *)malloc(sizeof(struct TYPE_DATA_T));
@@ -15,15 +16,21 @@ void free_type_data(type_data_t *data) {
   free(data);
 }
 
+bool cmp_type_data(type_data_t *d1, type_data_t *d2) {
+  return (memcmp(d1->pointer, d2->pointer, d1->size) == 0);
+}
+
 void initialize_stack() {
-  printf("================[STACK INIT]================\n");
+  fdebug("================[STACK INIT]================\n");
   smart_stack.smart_pointers = initialize_list(sizeof(struct SMART_PTR_T));
   smart_stack.current_level = 0;
+  initialize_stack_exceptions();
 }
 
 void end_stack() {
   free_list(smart_stack.smart_pointers, kill_smart);
-  printf("================[STACK END]================\n");
+  end_statck_exceptions();
+  fdebug("================[STACK END]================\n");
 }
 
 smart_ptr_t *smart_alloc(size_t size, void *data) {
@@ -89,7 +96,7 @@ void pop_stack() {
         ((smart_ptr_t *)smart_stack.smart_pointers->pointer[index]);
     size_t pointer_index = pointer->index_stack;
     // TODO: review this
-    if (pointer->level_created == smart_stack.current_level) {
+    if (pointer->level_created >= smart_stack.current_level) {
       if (smart_release(pointer) == SMART_PTR_FREE) {
         for (size_t index = pointer_index;
              index < smart_stack.smart_pointers->lenght; index++) {

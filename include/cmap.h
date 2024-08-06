@@ -27,4 +27,6 @@ void free_map(cmap_t *map);
 cspair_t *append_map(cmap_t *map, cspair_t *pair);
 smart_ptr_t *get_map_by_key(cmap_t *map, type_data_t *data);
 
+bool key_exists_in_map(cmap_t *map, type_data_t *key);
+
 #endif

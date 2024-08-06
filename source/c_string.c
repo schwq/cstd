@@ -1,4 +1,4 @@
-#include "c_string.h"
+#include "../include/c_string.h"
 
 allocator_char_t *init_allocator_char_t(const char *ch) {
   const size_t size = strlen(ch);

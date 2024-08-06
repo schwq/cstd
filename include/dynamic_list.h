@@ -63,4 +63,6 @@ void print_contents_list(dynamic_list_t *list, void (*printf_fp)(void *));
 
 bool is_empty(dynamic_list_t *list);
 
+void clean_list(dynamic_list_t *list, void (*free_fp)(void *));
+
 #endif

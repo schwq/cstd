@@ -1,4 +1,4 @@
-#include "benchmark.h"
+#include "../include/benchmark.h"
 
 vec3_t *create_vec3(float x, float y, float z) {
   vec3_t *vec = (vec3_t *)malloc(sizeof(struct VECTOR3_T));

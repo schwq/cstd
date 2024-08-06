@@ -1,4 +1,4 @@
-#include "dynamic_list.h"
+#include "../include/dynamic_list.h"
 
 void *has_value_or(optional_t optional, void * or) {
   if (optional.has_value) {
@@ -114,7 +114,7 @@ void remove_list(dynamic_list_t *list, size_t index, void (*free_fp)(void *)) {
 
   list->lenght -= 1;
 
-  if (list->lenght < (list->allocatedSize - list->reallocGap))
+  if (list->lenght < (int)(list->allocatedSize - list->reallocGap))
     realloc_list(list, list->allocatedSize - list->reallocGap, e_dealloc);
 
   shift_left_list(list, index);
@@ -139,3 +139,18 @@ bool is_range_inside_range(range_t is_range, range_t inside_of) {
 }
 
 bool is_empty(dynamic_list_t *list) { return (list->lenght == 0); }
+
+void clean_list(dynamic_list_t *list, void (*free_fp)(void *)) {
+  const size_t size = list->lenght;
+  for (size_t index = 0; index < list->lenght; index++) {
+    (free_fp) ? free_fp(list->pointer[index]) : free(list->pointer[index]);
+  }
+
+  list->lenght = 0;
+
+  if (0 < (int)(list->allocatedSize - list->reallocGap))
+    realloc_list(list, list->reallocGap, e_dealloc);
+
+  list->range = initialize_range(list->pointer, list->lenght);
+  fdebug("Cleaned list! Pointer 0x%x, Size clean %u", list->pointer, size);
+}

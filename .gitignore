@@ -1,3 +1,6 @@
 .vscode/
 main.c
 dynamic
+.windows_old/
+main
+libcstd.so

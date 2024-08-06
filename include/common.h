@@ -18,4 +18,6 @@
 #define fdebug(...)
 #endif
 
+#define _freeble __atribute__((_freeable_))
+
 #endif

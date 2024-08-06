@@ -15,6 +15,8 @@ typedef struct TYPE_DATA_T {
 type_data_t *make_type_data(void *data, size_t size);
 void free_type_data(type_data_t *data);
 
+bool cmp_type_data(type_data_t *d1, type_data_t *d2);
+
 typedef struct SMART_PTR_T {
 
   size_t references;
