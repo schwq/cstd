@@ -3,6 +3,7 @@
 
 #include "c_string.h"
 #include "dynamic_list.h"
+#include "memory.h"
 #include "smart_ptr.h"
 
 typedef struct EXCEPTION_T {
@@ -23,7 +24,8 @@ typedef struct RUNTIME_EXCEPTION_T {
 
 typedef struct STACK_EXCEPTIONS_T {
 
-  dynamic_list_t *exceptions;
+  dynamic_list_t *exceptions; // past exceptions
+  exception_t *current_exc;   // current one
   size_t current_level;
 
 } stack_exceptions_t;

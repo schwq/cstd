@@ -9,7 +9,7 @@ void end_statck_exceptions() {
 }
 
 exception_t *make_exception(const char *what) {
-  exception_t *exc = malloc(sizeof(struct EXCEPTION_T));
+  exception_t *exc = MALLOC(sizeof(struct EXCEPTION_T));
   exc->catched = false;
   exc->level_created = stack_exceptions.current_level;
   exc->stack_index = stack_exceptions.exceptions->lenght;
@@ -25,5 +25,17 @@ void free_exception(exception_t *exc) {
 
 void try_exc() { clean_list(stack_exceptions.exceptions, free_exception); }
 
-extern inline void throw_exc(exception_t *exc) {}
-extern inline void catch_exc() {}
+inline void throw_exc(exception_t *exc) {
+  stack_exceptions.current_exc = exc;
+  stack_exceptions.current_level = smart_stack.current_level;
+}
+
+inline void catch_exc() {
+  if (stack_exceptions.current_exc != nullptr) {
+    fprintf(stderr, "[EXCEPTION] -> ");
+    fprintf(stderr, stack_exceptions.current_exc->what->allocator->pointer);
+    stack_exceptions.current_exc->catched = true;
+    append_list(stack_exceptions.exceptions, stack_exceptions.current_exc);
+    stack_exceptions.current_exc = nullptr;
+  }
+}

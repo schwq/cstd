@@ -1,7 +1,7 @@
 #include "../include/cmap.h"
 
 cspair_t *make_smart_pair(smart_ptr_t *first, smart_ptr_t *second) {
-  cspair_t *pair = malloc(sizeof(struct CSPAIR_T));
+  cspair_t *pair = MALLOC(sizeof(struct CSPAIR_T));
   pair->first = smart_grab(first);
   pair->second = smart_grab(second);
   return pair;
@@ -10,18 +10,18 @@ cspair_t *make_smart_pair(smart_ptr_t *first, smart_ptr_t *second) {
 void free_smart_pair(cspair_t *pair) {
   smart_release(pair->first);
   smart_release(pair->second);
-  free(pair);
+  FREE(pair);
 }
 
 cmap_t *make_map() {
-  cmap_t *map = (cmap_t *)malloc(sizeof(struct CMAP_T));
+  cmap_t *map = (cmap_t *)MALLOC(sizeof(struct CMAP_T));
   map->elements = initialize_list(sizeof(struct CSPAIR_T));
   return map;
 }
 
 void free_map(cmap_t *map) {
   free_list(map->elements, free_smart_pair);
-  free(map);
+  FREE(map);
 }
 
 cspair_t *append_map(cmap_t *map, cspair_t *pair) {

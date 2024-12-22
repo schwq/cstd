@@ -9,10 +9,11 @@
 
 typedef struct TYPE_DATA_T {
   void *pointer;
+  void (*free_fp)(void *);
   size_t size;
 } type_data_t;
 
-type_data_t *make_type_data(void *data, size_t size);
+type_data_t *make_type_data(void *data, size_t size, void (*free_fp)(void *));
 void free_type_data(type_data_t *data);
 
 bool cmp_type_data(type_data_t *d1, type_data_t *d2);
@@ -23,6 +24,7 @@ typedef struct SMART_PTR_T {
   type_data_t *data;
   size_t index_stack;
   size_t level_created;
+  bool free_by_scope;
 } smart_ptr_t;
 
 static void kill_smart(smart_ptr_t *ptr);
@@ -35,12 +37,14 @@ typedef struct SMART_PTR_STACK {
 static smart_ptr_stack smart_stack;
 
 void initialize_stack();
-void end_stack();
+int end_stack(int code);
 
 void push_stack();
 void pop_stack();
 
-smart_ptr_t *smart_alloc(size_t size, void *data);
+smart_ptr_t *smart_alloc(size_t size, void *data, void (*free_fp)(void *));
+smart_ptr_t *smart_alloc_c(size_t size, void *data, void (*free_fp)(void *));
+smart_ptr_t *smart_alloc_f(size_t size, void *data, void (*free_fp)(void *));
 
 smart_ptr_t *smart_grab(smart_ptr_t *ptr);
 
@@ -54,5 +58,7 @@ void *smart_get(smart_ptr_t *ptr);
 int smart_release(smart_ptr_t *ptr);
 
 void smart_free(smart_ptr_t *ptr);
+
+void *copy_data_ptr(size_t size, void *data);
 
 #endif

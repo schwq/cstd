@@ -1,11 +1,8 @@
 #ifndef _DYNAMIC_LIST_H_
 #define _DYNAMIC_LIST_H_
 
-#include <malloc.h>
-
 #include "common.h"
-
-#define nullptr (void *)NULL
+#include "memory.h"
 
 typedef struct OPTIONAL_T {
 

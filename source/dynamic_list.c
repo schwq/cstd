@@ -3,7 +3,7 @@
 void *has_value_or(optional_t optional, void * or) {
   if (optional.has_value) {
     if (or)
-      free(or);
+      FREE(or);
     return optional.data;
   }
   return or ;
@@ -19,7 +19,7 @@ optional_t create_optional_ud(bool has_value, void *data, void *userdata) {
 
 dynamic_list_t *initialize_list(size_t sizeof_item) {
   dynamic_list_t *_list =
-      (dynamic_list_t *)malloc(sizeof(struct DYNAMIC_LIST_T));
+      (dynamic_list_t *)MALLOC(sizeof(struct DYNAMIC_LIST_T));
   _list->lenght = 0;
   _list->pointer = calloc(10, sizeof(void *));
   _list->allocatedSize = 10;
@@ -33,7 +33,7 @@ dynamic_list_t *initialize_list(size_t sizeof_item) {
 dynamic_list_t *initialize_list_allocated(size_t sizeof_item,
                                           size_t initial_alloc) {
   dynamic_list_t *_list =
-      (dynamic_list_t *)malloc(sizeof(struct DYNAMIC_LIST_T));
+      (dynamic_list_t *)MALLOC(sizeof(struct DYNAMIC_LIST_T));
   _list->lenght = 0;
   _list->pointer = calloc(initial_alloc, sizeof(void *));
   _list->allocatedSize = initial_alloc;
@@ -76,10 +76,10 @@ void free_list(dynamic_list_t *list, void (*free_fp)(void *)) {
   for (size_t index = 0; index < list->lenght; index++) {
     fdebug("Free item from list! Item 0x%x, Index %u\n", list->pointer[index],
            index);
-    (free_fp) ? free_fp(list->pointer[index]) : free(list->pointer[index]);
+    (free_fp) ? free_fp(list->pointer[index]) : FREE(list->pointer[index]);
   }
-  free(list->pointer);
-  free(list);
+  FREE(list->pointer);
+  FREE(list);
   fdebug("Free list pointer!\n");
 }
 
@@ -110,7 +110,7 @@ void remove_list(dynamic_list_t *list, size_t index, void (*free_fp)(void *)) {
     return (void)printf("(ERROR) -> Out of range to remove from list");
 
   void *item = list->pointer[index];
-  (free_fp) ? free_fp(list->pointer[index]) : free(list->pointer[index]);
+  (free_fp) ? free_fp(list->pointer[index]) : FREE(list->pointer[index]);
 
   list->lenght -= 1;
 
@@ -143,7 +143,7 @@ bool is_empty(dynamic_list_t *list) { return (list->lenght == 0); }
 void clean_list(dynamic_list_t *list, void (*free_fp)(void *)) {
   const size_t size = list->lenght;
   for (size_t index = 0; index < list->lenght; index++) {
-    (free_fp) ? free_fp(list->pointer[index]) : free(list->pointer[index]);
+    (free_fp) ? free_fp(list->pointer[index]) : FREE(list->pointer[index]);
   }
 
   list->lenght = 0;

@@ -144,6 +144,8 @@ int main() {
 ```
 *Best way to avoid this kind of error? Let the program handle itself the pointer sometimes*
 
+*`pop_stack()` is allow to only take one reference away from the smart pointer in their lifetime, there is a variable inside the smart pointer that controls if the pointer have lost a reference by the scope, if so, others `pop_stack()` called during execution wont free the smart pointer and wont cause a segmentation fault*
+
 ### Dynamic lists
 
 *Dynamics lists are like array in c, the difference is that the size is change overtime. When we allocate a array in c, we must specify the size in the beginning that wont change! Dynamics lists can have multiple elements inside of it, if the space is filled, it wiil allocate more space*
@@ -200,6 +202,13 @@ int main() {
 *The free function can be a function that the programmer created, like this case, or if none is passed, the default `free()` is used*
 
 ```c 
-    remove_list(list, nullptr); // -> free() is used to deallocate elements!
+  remove_list(list, nullptr); // -> free() is used to deallocate elements! Not the best idea 
 ```
 
+*Remember that to get the value from a smart pointer or from a dynamic list, you must cast the void\* pointer provide to the exactly struct pointer that the dynamic list or the smart pointer holds, so you can acess it variables*
+
+```c 
+  // Get the element from the list with index 0, cast to the struct pointer, get the variable (value, that is a pointer)
+  // and get the data pointed by the pointer
+  printf("Interger value is %i", *((interger_t *)(list->pointer[0]))->value);
+```

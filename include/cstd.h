@@ -6,6 +6,8 @@
 #include "common.h"
 #include "dynamic_list.h"
 #include "exception.h"
+#include "lmath.h"
+#include "matrix.h"
 #include "smart_ptr.h"
 
 #endif
